@@ -19,6 +19,12 @@ public class NLP_inference {
      */
     public static void main(String[] args) {
         // TODO code application logic here
+        //leggere dal csv separato da tab (\t)
+        //per ogni riga estrarre i due alberi parentesizzati
+        //generare gli alberi
+        //generare i dt
+        //dot product tra dt
+        //abbiamo similitudine tra le due frasi
     }
     
 }
