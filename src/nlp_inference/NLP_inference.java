@@ -9,6 +9,7 @@ import it.uniroma2.util.tree.Tree;
 import java.io.IOException;
 import java.util.List;
 import it.uniroma2.dtk.op.convolution.CircularConvolution;
+import it.uniroma2.dtk.op.product.GammaProduct;
 import it.uniroma2.util.math.ArrayMath;
 /**
  *
@@ -35,13 +36,13 @@ public class NLP_inference {
         //rispetto alle label del file calcolare accuracy (VP+NP)/(P+N) dove P ed N sono positivi e negativi in tot
         String filename="snli_1.0_dev.txt";
         CSVParser parser=new CSVParser(filename);
-        List<Tree> pair=null;
-        GenericDT dt=new GenericDT(0, 4096,true,true,1, new CircularConvolution());
-        while(!(pair=parser.nextPair()).isEmpty()){
-            Tree t1=pair.get(0);
-            Tree t2=pair.get(1);
-            double[] dt1=dt.dt(t1);
-            double[] dt2=dt.dt(t2);
+        CSVElement pair=null;
+        GenericDT dt=new GenericDT(0, 2048,true,true,1,  new CircularConvolution());
+        while((pair=parser.nextPair())!=null){
+   
+            double[] dt1=dt.dt(pair.getT1());
+            double[] dt2=dt.dt(pair.getT2());
+            System.out.println(pair.getLabel());
             System.out.println(ArrayMath.cosine(dt1, dt2));
             // TreeKernel tk=new TreeKernel();
            // System.out.println(TreeKernel.value(t2, t1));
