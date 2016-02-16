@@ -35,7 +35,7 @@ public class NLP_inference {
         String filename="snli_1.0_dev.txt";
         CSVParser parser=new CSVParser(filename);
         CSVElement pair=null;
-        double threshold1=0.5;
+        double threshold1=0.7;
         double threshold2=-0.5;
         Statistics impl=new Statistics();
         Statistics contr=new Statistics();
@@ -45,10 +45,13 @@ public class NLP_inference {
    
             double[] dt1=dt.dt(pair.getT1());
             double[] dt2=dt.dt(pair.getT2());
-            System.out.println("NLI: "+pair.getLabel());
-            double cosine=ArrayMath.cosine(dt1, dt2);
-            System.out.print("NLP_I: ");
             
+            double cosine=ArrayMath.cosine(dt1, dt2);
+            
+            if(pair.getLabel().equals("-"))
+                continue;
+            System.out.println("NLI: "+pair.getLabel());
+            System.out.print("NLP_I: ");
             if(cosine>=threshold1){
                 System.out.println("imply");
                 impl.incCouples();
