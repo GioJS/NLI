@@ -11,6 +11,7 @@ import java.util.List;
 import it.uniroma2.dtk.op.convolution.CircularConvolution;
 import it.uniroma2.dtk.op.product.GammaProduct;
 import it.uniroma2.util.math.ArrayMath;
+import it.uniroma2.sag.kelp.learningalgorithm.classification.multiclassification.MultiLabelClassificationLearning;
 /**
  *
  * @author giordanocristini
@@ -35,6 +36,7 @@ public class NLP_inference {
         String filename="snli_1.0_dev.txt";
         CSVParser parser=new CSVParser(filename);
         CSVElement pair=null;
+        
         double threshold1=0.7;
         double threshold2=-0.5;
         Statistics impl=new Statistics();
