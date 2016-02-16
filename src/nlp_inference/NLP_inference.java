@@ -10,6 +10,10 @@ import it.uniroma2.tk.TreeKernel;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import it.uniroma2.dtk.op.convolution.CircularConvolution;
+import it.uniroma2.dtk.op.convolution.ShuffledCircularConvolution;
+import it.uniroma2.dtk.op.product.GammaProduct;
+import it.uniroma2.util.math.ArrayMath;
 /**
  *
  * @author giordanocristini
@@ -30,8 +34,16 @@ public class NLP_inference {
         String filename="snli_1.0_dev.txt";
         CSVParser parser=new CSVParser(filename);
         List<Tree> pair=null;
-        while((pair=parser.nextPair()).size()!=0)
-            System.out.println(pair);
+        GenericDT dt=new GenericDT(0, 2048, true, true, new CircularConvolution());
+        while(!(pair=parser.nextPair()).isEmpty()){
+            Tree t1=pair.get(0);
+            Tree t2=pair.get(1);
+            double[] dt1=dt.dtf(t1);
+            double[] dt2=dt.dtf(t2);
+            System.out.println(ArrayMath.cosine(dt1, dt2));
+            // TreeKernel tk=new TreeKernel();
+           // System.out.println(TreeKernel.value(t2, t1));
+        }
     }
     
 }
