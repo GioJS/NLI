@@ -13,6 +13,7 @@ import java.util.List;
 import it.uniroma2.dtk.op.convolution.CircularConvolution;
 import it.uniroma2.dtk.op.convolution.ShuffledCircularConvolution;
 import it.uniroma2.dtk.op.product.GammaProduct;
+import it.uniroma2.dtk.op.product.ShuffledGammaProduct;
 import it.uniroma2.util.math.ArrayMath;
 /**
  *
@@ -31,12 +32,12 @@ public class NLP_inference {
         //generare i dt
         //dot product tra dt
         //abbiamo similitudine tra le due frasi
-        //classificare se le due frasi sono : neutrali, implicanti, in contraddizione
+        //classificare se le due frasi sono : neutrali ~ 0, implicanti ~ 1, in contraddizione ~ -1
         //rispetto alle label del file calcolare accuracy (VP+NP)/(P+N) dove P ed N sono positivi e negativi in tot
         String filename="snli_1.0_dev.txt";
         CSVParser parser=new CSVParser(filename);
         List<Tree> pair=null;
-        GenericDT dt=new GenericDT(0, 4096,1, new CircularConvolution());
+        GenericDT dt=new GenericDT(0, 4096,true,true,1, new CircularConvolution());
         while(!(pair=parser.nextPair()).isEmpty()){
             Tree t1=pair.get(0);
             Tree t2=pair.get(1);
