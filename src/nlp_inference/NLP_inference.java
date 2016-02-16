@@ -35,6 +35,7 @@ public class NLP_inference {
         String filename="snli_1.0_dev.txt";
         CSVParser parser=new CSVParser(filename);
         CSVElement pair=null;
+        double threhold=0.5;
         GenericDT dt=new GenericDT(0, 2048,true,true,1,  new CircularConvolution());
         while((pair=parser.nextPair())!=null){
    
@@ -43,9 +44,9 @@ public class NLP_inference {
             System.out.println("NLI: "+pair.getLabel());
             double cosine=ArrayMath.cosine(dt1, dt2);
             System.out.print("NLP_I: ");
-            if(cosine>=0.5)
+            if(cosine>=threhold)
                 System.out.println("imply");
-            else if(cosine>=-0.5)
+            else if(cosine>=-threhold)
                 System.out.println("neutral");
             else
                 System.out.println("contradiction");
