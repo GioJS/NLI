@@ -6,14 +6,9 @@
 package nlp_inference;
 import it.uniroma2.dtk.dt.GenericDT;
 import it.uniroma2.util.tree.Tree;
-import it.uniroma2.tk.TreeKernel;
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import it.uniroma2.dtk.op.convolution.CircularConvolution;
-import it.uniroma2.dtk.op.convolution.ShuffledCircularConvolution;
-import it.uniroma2.dtk.op.product.GammaProduct;
-import it.uniroma2.dtk.op.product.ShuffledGammaProduct;
 import it.uniroma2.util.math.ArrayMath;
 /**
  *
