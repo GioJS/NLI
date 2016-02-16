@@ -37,6 +37,9 @@ public class NLP_inference {
         CSVElement pair=null;
         double threshold1=0.5;
         double threshold2=-0.5;
+        Statistics impl=new Statistics();
+        Statistics contr=new Statistics();
+        Statistics neutrals=new Statistics();
         GenericDT dt=new GenericDT(0, 2048,true,true,1,   CircularConvolution.class);
         while((pair=parser.nextPair())!=null){
    
@@ -45,15 +48,29 @@ public class NLP_inference {
             System.out.println("NLI: "+pair.getLabel());
             double cosine=ArrayMath.cosine(dt1, dt2);
             System.out.print("NLP_I: ");
-            if(cosine>=threshold1)
+            
+            if(cosine>=threshold1){
                 System.out.println("imply");
-            else if(cosine>=threshold2)
+                impl.incCouples();
+                if(pair.getLabel().equals("entailment"))
+                    impl.incCount();
+            }else if(cosine>=threshold2){
                 System.out.println("neutral");
-            else
+                neutrals.incCouples();
+                if(pair.getLabel().equals("neutral"))
+                    neutrals.incCount();
+            }else{
                 System.out.println("contradiction");
+                contr.incCouples();
+                if(pair.getLabel().equals("contradiction"))
+                    contr.incCount();
+            }
             // TreeKernel tk=new TreeKernel();
            // System.out.println(TreeKernel.value(t2, t1));
         }
+        System.out.println("Accuracy entailments: "+impl.frequency());
+        System.out.println("Accuracy contradictions: "+contr.frequency());
+        System.out.println("Accuracy neutrals: "+neutrals.frequency());
     }
     
 }
