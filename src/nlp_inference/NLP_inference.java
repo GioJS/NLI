@@ -40,8 +40,8 @@ public class NLP_inference {
         while(!(pair=parser.nextPair()).isEmpty()){
             Tree t1=pair.get(0);
             Tree t2=pair.get(1);
-            double[] dt1=dt.dtf(t1);
-            double[] dt2=dt.dtf(t2);
+            double[] dt1=dt.dt(t1);
+            double[] dt2=dt.dt(t2);
             System.out.println(ArrayMath.cosine(dt1, dt2));
             // TreeKernel tk=new TreeKernel();
            // System.out.println(TreeKernel.value(t2, t1));
