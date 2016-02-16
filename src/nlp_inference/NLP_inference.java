@@ -14,7 +14,11 @@ import it.uniroma2.util.math.ArrayMath;
  *
  * @author giordanocristini
  */
+
 public class NLP_inference {
+    public static final int CONTRADDICTION=-1;
+    public static final int NEUTRO=0;
+    public static final int IMPLY=1;
 
     /**
      * @param args the command line arguments
