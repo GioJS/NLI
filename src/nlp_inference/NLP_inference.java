@@ -31,6 +31,8 @@ public class NLP_inference {
         //generare i dt
         //dot product tra dt
         //abbiamo similitudine tra le due frasi
+        //classificare se le due frasi sono : neutrali, implicanti, in contraddizione
+        //rispetto alle label del file calcolare accuracy (VP+NP)/(P+N) dove P ed N sono positivi e negativi in tot
         String filename="snli_1.0_dev.txt";
         CSVParser parser=new CSVParser(filename);
         List<Tree> pair=null;
