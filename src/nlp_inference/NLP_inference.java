@@ -17,9 +17,7 @@ import it.uniroma2.util.math.ArrayMath;
  */
 
 public class NLP_inference {
-    public static final int CONTRADDICTION=-1;
-    public static final int NEUTRO=0;
-    public static final int IMPLY=1;
+    
 
     /**
      * @param args the command line arguments
@@ -42,8 +40,15 @@ public class NLP_inference {
    
             double[] dt1=dt.dt(pair.getT1());
             double[] dt2=dt.dt(pair.getT2());
-            System.out.println(pair.getLabel());
-            System.out.println(ArrayMath.cosine(dt1, dt2));
+            System.out.println("NLI: "+pair.getLabel());
+            double cosine=ArrayMath.cosine(dt1, dt2);
+            System.out.print("NLP_I: ");
+            if(cosine>=0.5)
+                System.out.println("imply");
+            else if(cosine>=-0.5)
+                System.out.println("neutral");
+            else
+                System.out.println("contradiction");
             // TreeKernel tk=new TreeKernel();
            // System.out.println(TreeKernel.value(t2, t1));
         }
