@@ -36,7 +36,7 @@ public class NLP_inference {
         String filename="snli_1.0_dev.txt";
         CSVParser parser=new CSVParser(filename);
         List<Tree> pair=null;
-        GenericDT dt=new GenericDT(0, 2048, true, true, new CircularConvolution());
+        GenericDT dt=new GenericDT(0, 4096,1, new CircularConvolution());
         while(!(pair=parser.nextPair()).isEmpty()){
             Tree t1=pair.get(0);
             Tree t2=pair.get(1);
