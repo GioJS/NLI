@@ -155,9 +155,11 @@ public class NLP_inference {
         int howmany = test_set.getNumberOfExamples();
         for(Example e:test_set.getExamples()){
             OneVsOneClassificationOutput output=f.predict(e);
+            System.out.println("Oracolo: "+e.getLabels()[0]);
             
             if(output.getPredictedClasses()==null)
                 continue;
+            System.out.println("Predetto: "+output.getPredictedClasses().get(0));
             if(!output.getPredictedClasses().isEmpty())
                 if(e.isExampleOf(output.getPredictedClasses().get(0)))
                     correct++;
