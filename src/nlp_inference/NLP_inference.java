@@ -159,7 +159,8 @@ public class NLP_inference {
             
             if(output.getPredictedClasses()==null)
                 continue;
-            System.out.println("Predetto: "+output.getPredictedClasses().get(0));
+            System.out.println("Predetto: "+output.getPredictedClasses().get(0)+" score: "+output.getScore(output.getPredictedClasses().get(0)));
+            
             if(!output.getPredictedClasses().isEmpty())
                 if(e.isExampleOf(output.getPredictedClasses().get(0)))
                     correct++;
