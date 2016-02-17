@@ -134,12 +134,14 @@ public class NLP_inference {
           //System.out.println(dataset.getNumberOfExamples());
         SimpleDataset test_set = new SimpleDataset();
         
-        
+        int test_limit=5000;
         parser=new CSVParser(filename_test);
         pair=null;
         
         while((pair=parser.nextPair())!=null){
             //crea un example da aggiungere al dataset
+              if(test_limit==0)
+                  break;
               if(pair.getLabel().equals("-"))
                   continue;
               SimpleExample ex=new SimpleExample();
@@ -177,6 +179,8 @@ public class NLP_inference {
 //            }
             // TreeKernel tk=new TreeKernel();
            // System.out.println(TreeKernel.value(t2, t1));
+           test_limit--;
+           System.out.println(5000-test_limit);
         }
         //inizializzo una svm con kernel lineare
         BinaryCSvmClassification svmSolver = new BinaryCSvmClassification();
