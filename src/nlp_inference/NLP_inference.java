@@ -19,6 +19,7 @@ import it.uniroma2.sag.kelp.data.representation.vector.DenseVector;
 import it.uniroma2.sag.kelp.kernel.Kernel;
 import it.uniroma2.sag.kelp.kernel.tree.PartialTreeKernel;
 import it.uniroma2.sag.kelp.kernel.standard.LinearKernelCombination;
+import it.uniroma2.sag.kelp.kernel.tree.SubTreeKernel;
 import it.uniroma2.sag.kelp.learningalgorithm.classification.libsvm.BinaryCSvmClassification;
 import it.uniroma2.sag.kelp.learningalgorithm.classification.multiclassification.MultiLabelClassificationLearning;
 import it.uniroma2.sag.kelp.learningalgorithm.classification.perceptron.KernelizedPerceptron;
@@ -127,7 +128,7 @@ public class NLP_inference {
         System.out.println(test_set.getNumberOfExamples());
         //inizializzo una svm con kernel lineare
         BinaryCSvmClassification svmSolver = new BinaryCSvmClassification();
-        Kernel kernel=new LinearKernelCombination();
+        Kernel kernel=new SubTreeKernel();
        // Perceptron p=new KernelizedPerceptron();
         svmSolver.setKernel(kernel);
         svmSolver.setCn(1.0f);

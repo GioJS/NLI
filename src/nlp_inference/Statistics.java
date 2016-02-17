@@ -9,6 +9,7 @@ package nlp_inference;
  *
  * @author Caterina
  */
+@Deprecated
 public class Statistics {
     
     private int count;
