@@ -12,9 +12,19 @@ import it.uniroma2.dtk.op.convolution.CircularConvolution;
 import it.uniroma2.dtk.op.product.GammaProduct;
 import it.uniroma2.util.math.ArrayMath;
 import it.uniroma2.sag.kelp.data.dataset.SimpleDataset;
+import it.uniroma2.sag.kelp.data.example.Example;
 import it.uniroma2.sag.kelp.data.example.SimpleExample;
 import it.uniroma2.sag.kelp.data.label.StringLabel;
 import it.uniroma2.sag.kelp.data.representation.vector.DenseVector;
+import it.uniroma2.sag.kelp.kernel.Kernel;
+import it.uniroma2.sag.kelp.kernel.tree.PartialTreeKernel;
+import it.uniroma2.sag.kelp.kernel.standard.LinearKernelCombination;
+import it.uniroma2.sag.kelp.learningalgorithm.classification.libsvm.BinaryCSvmClassification;
+import it.uniroma2.sag.kelp.learningalgorithm.classification.multiclassification.MultiLabelClassificationLearning;
+import it.uniroma2.sag.kelp.predictionfunction.classifier.ClassificationOutput;
+import it.uniroma2.sag.kelp.predictionfunction.classifier.multiclass.MultiLabelClassificationOutput;
+import it.uniroma2.sag.kelp.predictionfunction.classifier.multiclass.MultiLabelClassifier;
+import it.uniroma2.tk.TreeKernel;
 /**
  *
  * @author giordanocristini
@@ -36,7 +46,9 @@ public class NLP_inference {
         //abbiamo similitudine tra le due frasi
         //classificare se le due frasi sono : neutrali ~ 0, implicanti ~ 1, in contraddizione ~ -1
         //rispetto alle label del file calcolare accuracy (VP+NP)/(P+N) dove P ed N sono positivi e negativi in tot
+        //file snli dove abbiamo alberi e annotazione
         String filename="snli_1.0_dev.txt";
+        //istanzio un simple dataset
         SimpleDataset dataset = new SimpleDataset();
         
         //dataset.populate(filename);
@@ -45,6 +57,7 @@ public class NLP_inference {
 //        SimpleDataset test_set=train_test[1];
 //        System.out.println(training_set.getNumberOfExamples());
 //        System.out.println(test_set.getNumberOfExamples());
+        //parser per estrarre alberi e label
         CSVParser parser=new CSVParser(filename);
         CSVElement pair=null;
         
@@ -53,8 +66,11 @@ public class NLP_inference {
 //        Statistics impl=new Statistics();
 //        Statistics contr=new Statistics();
 //        Statistics neutrals=new Statistics();
+//distributed tree
         GenericDT dt=new GenericDT(0, 2048,true,true,1,   CircularConvolution.class);
         while((pair=parser.nextPair())!=null){
+            //crea un example da aggiungere al dataset
+              
               SimpleExample ex=new SimpleExample();
               ex.addLabel(new StringLabel(pair.getLabel()));
               ex.addRepresentation("T1", new DenseVector(dt.dt(pair.getT1())));
@@ -93,11 +109,41 @@ public class NLP_inference {
 //        System.out.println("Accuracy neutrals: "+neutrals.frequency());
           //System.out.println(dataset.getNextExample());
           //System.out.println(dataset.getNumberOfExamples());
+        //spezzo il dataset in training e test set (60-40)
         SimpleDataset[] train_test=dataset.split(0.6f);
         SimpleDataset training_set=train_test[0];
         SimpleDataset test_set=train_test[1];
         System.out.println(training_set.getNumberOfExamples());
         System.out.println(test_set.getNumberOfExamples());
+        //inizializzo una svm con kernel lineare
+        BinaryCSvmClassification svmSolver = new BinaryCSvmClassification();
+        Kernel kernel=new LinearKernelCombination();
+        
+        svmSolver.setKernel(kernel);
+        svmSolver.setCn(1.0f);
+        svmSolver.setCp(1.0f);
+        //istanzio un multiclass classificator che sfrutta il classificatore binario
+        MultiLabelClassificationLearning classificator=new MultiLabelClassificationLearning();
+        classificator.setBaseAlgorithm(svmSolver);
+        classificator.setLabels(dataset.getClassificationLabels());
+        classificator.learn(training_set);
+        //calcolo l'accuracy sul test set
+        MultiLabelClassifier f = classificator.getPredictionFunction();
+        
+        int correct = 0;
+        int howmany = test_set.getNumberOfExamples();
+        for(Example e:test_set.getExamples()){
+            MultiLabelClassificationOutput output=f.predict(e);
+            
+            if(output.getPredictedClasses()==null)
+                continue;
+            if(!output.getPredictedClasses().isEmpty())
+                if(e.isExampleOf(output.getPredictedClasses().get(0)))
+                    correct++;
+            //System.out.println();
+        }
+        float accuracy=correct/(float)howmany;
+        System.out.println("accuracy: "+accuracy);
     }
     
 }
