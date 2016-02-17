@@ -21,9 +21,18 @@ import it.uniroma2.sag.kelp.kernel.tree.PartialTreeKernel;
 import it.uniroma2.sag.kelp.kernel.standard.LinearKernelCombination;
 import it.uniroma2.sag.kelp.learningalgorithm.classification.libsvm.BinaryCSvmClassification;
 import it.uniroma2.sag.kelp.learningalgorithm.classification.multiclassification.MultiLabelClassificationLearning;
+import it.uniroma2.sag.kelp.learningalgorithm.classification.perceptron.KernelizedPerceptron;
+import it.uniroma2.sag.kelp.learningalgorithm.classification.perceptron.LinearPerceptron;
 import it.uniroma2.sag.kelp.predictionfunction.classifier.ClassificationOutput;
 import it.uniroma2.sag.kelp.predictionfunction.classifier.multiclass.MultiLabelClassificationOutput;
 import it.uniroma2.sag.kelp.predictionfunction.classifier.multiclass.MultiLabelClassifier;
+import it.uniroma2.sag.kelp.learningalgorithm.classification.perceptron.Perceptron;
+import it.uniroma2.sag.kelp.learningalgorithm.classification.multiclassification.OneVsAllLearning;
+import it.uniroma2.sag.kelp.learningalgorithm.classification.multiclassification.OneVsOneLearning;
+import it.uniroma2.sag.kelp.predictionfunction.classifier.multiclass.OneVsAllClassificationOutput;
+import it.uniroma2.sag.kelp.predictionfunction.classifier.multiclass.OneVsAllClassifier;
+import it.uniroma2.sag.kelp.predictionfunction.classifier.multiclass.OneVsOneClassificationOutput;
+import it.uniroma2.sag.kelp.predictionfunction.classifier.multiclass.OneVsOneClassifier;
 import it.uniroma2.tk.TreeKernel;
 /**
  *
@@ -70,7 +79,8 @@ public class NLP_inference {
         GenericDT dt=new GenericDT(0, 2048,true,true,1,   CircularConvolution.class);
         while((pair=parser.nextPair())!=null){
             //crea un example da aggiungere al dataset
-              
+              if(pair.getLabel().equals("-"))
+                  continue;
               SimpleExample ex=new SimpleExample();
               ex.addLabel(new StringLabel(pair.getLabel()));
               ex.addRepresentation("T1", new DenseVector(dt.dt(pair.getT1())));
@@ -118,22 +128,23 @@ public class NLP_inference {
         //inizializzo una svm con kernel lineare
         BinaryCSvmClassification svmSolver = new BinaryCSvmClassification();
         Kernel kernel=new LinearKernelCombination();
-        
+       // Perceptron p=new KernelizedPerceptron();
         svmSolver.setKernel(kernel);
         svmSolver.setCn(1.0f);
         svmSolver.setCp(1.0f);
         //istanzio un multiclass classificator che sfrutta il classificatore binario
-        MultiLabelClassificationLearning classificator=new MultiLabelClassificationLearning();
+        //MultiLabelClassificationLearning classificator=new MultiLabelClassificationLearning();
+        OneVsOneLearning classificator = new OneVsOneLearning();
         classificator.setBaseAlgorithm(svmSolver);
         classificator.setLabels(dataset.getClassificationLabels());
         classificator.learn(training_set);
         //calcolo l'accuracy sul test set
-        MultiLabelClassifier f = classificator.getPredictionFunction();
+        OneVsOneClassifier f = classificator.getPredictionFunction();
         
         int correct = 0;
         int howmany = test_set.getNumberOfExamples();
         for(Example e:test_set.getExamples()){
-            MultiLabelClassificationOutput output=f.predict(e);
+            OneVsOneClassificationOutput output=f.predict(e);
             
             if(output.getPredictedClasses()==null)
                 continue;
