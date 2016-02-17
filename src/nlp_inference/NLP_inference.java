@@ -91,7 +91,7 @@ public class NLP_inference {
               double[] dt2=dt.dt(pair.getT2());
               ex.addRepresentation("T1", new DenseVector(dt1));
               ex.addRepresentation("T2", new DenseVector(dt2));
-              ex.addRepresentation("Cos", new DenseVector(new double[]{ArrayMath.cosine(dt1, dt2)}));
+             // ex.addRepresentation("Cos", new DenseVector(new double[]{ArrayMath.cosine(dt1, dt2)}));
               dataset.addExample(ex);
 //            double[] dt1=dt.dt(pair.getT1());
 //            double[] dt2=dt.dt(pair.getT2());
