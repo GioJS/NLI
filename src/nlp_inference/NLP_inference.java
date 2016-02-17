@@ -17,6 +17,7 @@ import it.uniroma2.sag.kelp.data.example.SimpleExample;
 import it.uniroma2.sag.kelp.data.label.StringLabel;
 import it.uniroma2.sag.kelp.data.representation.vector.DenseVector;
 import it.uniroma2.sag.kelp.kernel.Kernel;
+import it.uniroma2.sag.kelp.kernel.standard.KernelMultiplication;
 import it.uniroma2.sag.kelp.kernel.tree.PartialTreeKernel;
 import it.uniroma2.sag.kelp.kernel.standard.LinearKernelCombination;
 import it.uniroma2.sag.kelp.kernel.tree.SubTreeKernel;
@@ -35,6 +36,8 @@ import it.uniroma2.sag.kelp.predictionfunction.classifier.multiclass.OneVsAllCla
 import it.uniroma2.sag.kelp.predictionfunction.classifier.multiclass.OneVsOneClassificationOutput;
 import it.uniroma2.sag.kelp.predictionfunction.classifier.multiclass.OneVsOneClassifier;
 import it.uniroma2.tk.TreeKernel;
+import it.uniroma2.sag.kelp.data.example.ExamplePair;
+import it.uniroma2.sag.kelp.kernel.vector.LinearKernel;
 /**
  *
  * @author giordanocristini
@@ -84,8 +87,11 @@ public class NLP_inference {
                   continue;
               SimpleExample ex=new SimpleExample();
               ex.addLabel(new StringLabel(pair.getLabel()));
-              ex.addRepresentation("T1", new DenseVector(dt.dt(pair.getT1())));
-              ex.addRepresentation("T2", new DenseVector(dt.dt(pair.getT2())));
+              double[] dt1=dt.dt(pair.getT1());
+              double[] dt2=dt.dt(pair.getT2());
+              ex.addRepresentation("T1", new DenseVector(dt1));
+              ex.addRepresentation("T2", new DenseVector(dt2));
+              ex.addRepresentation("Cos", new DenseVector(new double[]{ArrayMath.cosine(dt1, dt2)}));
               dataset.addExample(ex);
 //            double[] dt1=dt.dt(pair.getT1());
 //            double[] dt2=dt.dt(pair.getT2());
@@ -127,16 +133,19 @@ public class NLP_inference {
         System.out.println(training_set.getNumberOfExamples());
         System.out.println(test_set.getNumberOfExamples());
         //inizializzo una svm con kernel lineare
-        BinaryCSvmClassification svmSolver = new BinaryCSvmClassification();
-        Kernel kernel=new SubTreeKernel();
-       // Perceptron p=new KernelizedPerceptron();
-        svmSolver.setKernel(kernel);
-        svmSolver.setCn(1.0f);
-        svmSolver.setCp(1.0f);
+        //BinaryCSvmClassification svmSolver = new BinaryCSvmClassification();
+        Kernel kernel=new KernelMultiplication();
+        KernelizedPerceptron p=new KernelizedPerceptron();
+        p.setKernel(kernel);
+       // p.setLabels(dataset.getClassificationLabels());
+        
+       // svmSolver.setKernel(kernel);
+        //svmSolver.setCn(1.0f);
+        //svmSolver.setCp(1.0f);
         //istanzio un multiclass classificator che sfrutta il classificatore binario
         //MultiLabelClassificationLearning classificator=new MultiLabelClassificationLearning();
         OneVsOneLearning classificator = new OneVsOneLearning();
-        classificator.setBaseAlgorithm(svmSolver);
+        classificator.setBaseAlgorithm(p);
         classificator.setLabels(dataset.getClassificationLabels());
         classificator.learn(training_set);
         //calcolo l'accuracy sul test set
