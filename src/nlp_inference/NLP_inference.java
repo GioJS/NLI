@@ -35,9 +35,13 @@ import it.uniroma2.sag.kelp.predictionfunction.classifier.multiclass.OneVsAllCla
 import it.uniroma2.sag.kelp.predictionfunction.classifier.multiclass.OneVsAllClassifier;
 import it.uniroma2.sag.kelp.predictionfunction.classifier.multiclass.OneVsOneClassificationOutput;
 import it.uniroma2.sag.kelp.predictionfunction.classifier.multiclass.OneVsOneClassifier;
+import it.uniroma2.sag.kelp.utils.evaluation.MulticlassClassificationEvaluator;
 import it.uniroma2.tk.TreeKernel;
 import it.uniroma2.sag.kelp.data.example.ExamplePair;
+import it.uniroma2.sag.kelp.kernel.KernelCombination;
+import it.uniroma2.sag.kelp.kernel.tree.SmoothedPartialTreeKernel;
 import it.uniroma2.sag.kelp.kernel.vector.LinearKernel;
+import it.uniroma2.sag.kelp.learningalgorithm.classification.libsvm.BinaryNuSvmClassification;
 /**
  *
  * @author giordanocristini
@@ -183,7 +187,9 @@ public class NLP_inference {
            System.out.println(5000-test_limit);
         }
         //inizializzo una svm con kernel lineare
-        BinaryCSvmClassification svmSolver = new BinaryCSvmClassification();
+        
+        
+        BinaryNuSvmClassification svmSolver = new BinaryNuSvmClassification();
         Kernel kernel=new KernelMultiplication();
         //KernelizedPerceptron p=new KernelizedPerceptron();
         //p.setKernel(kernel);
@@ -200,24 +206,31 @@ public class NLP_inference {
         classificator.learn(training_set);
         //calcolo l'accuracy sul test set
         OneVsOneClassifier f = classificator.getPredictionFunction();
-        
-        int correct = 0;
-        int howmany = test_set.getNumberOfExamples();
+        MulticlassClassificationEvaluator eval = new MulticlassClassificationEvaluator(training_set.getClassificationLabels());
+        //int correct = 0;
+        //int howmany = test_set.getNumberOfExamples();
         for(Example e:test_set.getExamples()){
             OneVsOneClassificationOutput output=f.predict(e);
             System.out.println("Oracolo: "+e.getLabels()[0]);
             
-            if(output.getPredictedClasses()==null)
-                continue;
+            
             System.out.println("Predetto: "+output.getPredictedClasses().get(0)+" score: "+output.getScore(output.getPredictedClasses().get(0)));
             
-            if(!output.getPredictedClasses().isEmpty())
-                if(e.isExampleOf(output.getPredictedClasses().get(0)))
-                    correct++;
+            eval.addCount(e, output);
+            
+            
+                
+                   // correct++;
             //System.out.println();
         }
-        float accuracy=correct/(float)howmany;
-        System.out.println("accuracy: "+accuracy);
+        System.out.println("Mean F1: "
+					+ eval.getPerformanceMeasure("MeanF1"));
+			
+			System.out.println("F1: "
+					+ eval.getPerformanceMeasure("OverallF1"));
+                  System.out.println("Accuracy: "+eval.getAccuracy());
+       // float accuracy=correct/(float)howmany;
+        //System.out.println("accuracy: "+accuracy);
     }
     
 }
