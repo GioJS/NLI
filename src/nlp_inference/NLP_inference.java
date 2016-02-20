@@ -12,6 +12,7 @@ import it.uniroma2.dtk.op.convolution.CircularConvolution;
 import it.uniroma2.dtk.op.product.GammaProduct;
 import it.uniroma2.util.math.ArrayMath;
 import it.uniroma2.sag.kelp.data.dataset.SimpleDataset;
+import it.uniroma2.sag.kelp.data.dataset.selector.RandomExampleSelector;
 import it.uniroma2.sag.kelp.data.example.Example;
 import it.uniroma2.sag.kelp.data.example.SimpleExample;
 import it.uniroma2.sag.kelp.data.label.StringLabel;
