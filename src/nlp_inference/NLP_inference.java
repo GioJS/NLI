@@ -65,26 +65,20 @@ public class NLP_inference {
         //classificare se le due frasi sono : neutrali ~ 0, implicanti ~ 1, in contraddizione ~ -1
         //rispetto alle label del file calcolare accuracy (VP+NP)/(P+N) dove P ed N sono positivi e negativi in tot
         //file snli dove abbiamo alberi e annotazione
-        String filename_train="snli_1.0_train.txt";
-        String filename_test="snli_1.0_test.txt";
+        String filename_train="snli_1.0_train.bigrams.TH_D.fix.kelp";
+        String filename_test="snli_1.0_test.bigrams.TH_D.fix.kelp";
         //istanzio un simple dataset
         SimpleDataset training_set = new SimpleDataset();
         
-        //dataset.populate(filename);
-//        SimpleDataset[] train_test=dataset.split(0.6f);
-//        SimpleDataset training_set=train_test[0];
-//        SimpleDataset test_set=train_test[1];
-//        System.out.println(training_set.getNumberOfExamples());
-//        System.out.println(test_set.getNumberOfExamples());
+        int tot_examples=training_set.getNumberOfExamples();
+        int examples=(int) (tot_examples*0.01);
+        training_set.populate(filename_train);
+        RandomExampleSelector rand=new RandomExampleSelector(examples);
+        
         //parser per estrarre alberi e label
         CSVParser parser=new CSVParser(filename_train);
         CSVElement pair=null;
-        
-//        double threshold1=0.7;
-//        double threshold2=-0.5;
-//        Statistics impl=new Statistics();
-//        Statistics contr=new Statistics();
-//        Statistics neutrals=new Statistics();
+
 //distributed tree
         int train_limit=10000;
         GenericDT dt=new GenericDT(0, 2048,true,true,1,   CircularConvolution.class);
@@ -102,41 +96,11 @@ public class NLP_inference {
               ex.addRepresentation("T2", new DenseVector(dt2));
              // ex.addRepresentation("Cos", new DenseVector(new double[]{ArrayMath.cosine(dt1, dt2)}));
               training_set.addExample(ex);
-//            double[] dt1=dt.dt(pair.getT1());
-//            double[] dt2=dt.dt(pair.getT2());
-//            
-//            double cosine=ArrayMath.cosine(dt1, dt2);
-//            
-//            if(pair.getLabel().equals("-"))
-//                continue;
-//            System.out.println("NLI: "+pair.getLabel());
-//            System.out.print("NLP_I: ");
-//            if(cosine>=threshold1){
-//                System.out.println("imply");
-//                impl.incCouples();
-//                if(pair.getLabel().equals("entailment"))
-//                    impl.incCount();
-//            }else if(cosine>=threshold2){
-//                System.out.println("neutral");
-//                neutrals.incCouples();
-//                if(pair.getLabel().equals("neutral"))
-//                    neutrals.incCount();
-//            }else{
-//                System.out.println("contradiction");
-//                contr.incCouples();
-//                if(pair.getLabel().equals("contradiction"))
-//                    contr.incCount();
-//            }
-            // TreeKernel tk=new TreeKernel();
-           // System.out.println(TreeKernel.value(t2, t1));
+
            train_limit--;
            System.out.println(10000-train_limit);
         }
-//        System.out.println("Accuracy entailments: "+impl.frequency());
-//        System.out.println("Accuracy contradictions: "+contr.frequency());
-//        System.out.println("Accuracy neutrals: "+neutrals.frequency());
-          //System.out.println(dataset.getNextExample());
-          //System.out.println(dataset.getNumberOfExamples());
+
         SimpleDataset test_set = new SimpleDataset();
         
         int test_limit=5000;
@@ -157,33 +121,7 @@ public class NLP_inference {
               ex.addRepresentation("T2", new DenseVector(dt2));
              // ex.addRepresentation("Cos", new DenseVector(new double[]{ArrayMath.cosine(dt1, dt2)}));
               test_set.addExample(ex);
-//            double[] dt1=dt.dt(pair.getT1());
-//            double[] dt2=dt.dt(pair.getT2());
-//            
-//            double cosine=ArrayMath.cosine(dt1, dt2);
-//            
-//            if(pair.getLabel().equals("-"))
-//                continue;
-//            System.out.println("NLI: "+pair.getLabel());
-//            System.out.print("NLP_I: ");
-//            if(cosine>=threshold1){
-//                System.out.println("imply");
-//                impl.incCouples();
-//                if(pair.getLabel().equals("entailment"))
-//                    impl.incCount();
-//            }else if(cosine>=threshold2){
-//                System.out.println("neutral");
-//                neutrals.incCouples();
-//                if(pair.getLabel().equals("neutral"))
-//                    neutrals.incCount();
-//            }else{
-//                System.out.println("contradiction");
-//                contr.incCouples();
-//                if(pair.getLabel().equals("contradiction"))
-//                    contr.incCount();
-//            }
-            // TreeKernel tk=new TreeKernel();
-           // System.out.println(TreeKernel.value(t2, t1));
+
            test_limit--;
            System.out.println(5000-test_limit);
         }
@@ -192,15 +130,11 @@ public class NLP_inference {
         
         BinaryNuSvmClassification svmSolver = new BinaryNuSvmClassification();
         Kernel kernel=new KernelMultiplication();
-        //KernelizedPerceptron p=new KernelizedPerceptron();
-        //p.setKernel(kernel);
-       // p.setLabels(dataset.getClassificationLabels());
-        
+
         svmSolver.setKernel(kernel);
         svmSolver.setCn(1.0f);
         svmSolver.setCp(1.0f);
-        //istanzio un multiclass classificator che sfrutta il classificatore binario
-        //MultiLabelClassificationLearning classificator=new MultiLabelClassificationLearning();
+
         OneVsOneLearning classificator = new OneVsOneLearning();
         classificator.setBaseAlgorithm(svmSolver);
         classificator.setLabels(training_set.getClassificationLabels());
@@ -208,8 +142,7 @@ public class NLP_inference {
         //calcolo l'accuracy sul test set
         OneVsOneClassifier f = classificator.getPredictionFunction();
         MulticlassClassificationEvaluator eval = new MulticlassClassificationEvaluator(training_set.getClassificationLabels());
-        //int correct = 0;
-        //int howmany = test_set.getNumberOfExamples();
+
         for(Example e:test_set.getExamples()){
             OneVsOneClassificationOutput output=f.predict(e);
             System.out.println("Oracolo: "+e.getLabels()[0]);
@@ -218,11 +151,7 @@ public class NLP_inference {
             System.out.println("Predetto: "+output.getPredictedClasses().get(0)+" score: "+output.getScore(output.getPredictedClasses().get(0)));
             
             eval.addCount(e, output);
-            
-            
-                
-                   // correct++;
-            //System.out.println();
+
         }
         System.out.println("Mean F1: "
 					+ eval.getPerformanceMeasure("MeanF1"));
@@ -230,8 +159,7 @@ public class NLP_inference {
 			System.out.println("F1: "
 					+ eval.getPerformanceMeasure("OverallF1"));
                   System.out.println("Accuracy: "+eval.getAccuracy());
-       // float accuracy=correct/(float)howmany;
-        //System.out.println("accuracy: "+accuracy);
+
     }
     
 }

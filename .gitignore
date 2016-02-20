@@ -1,5 +1,6 @@
 /build/
 /dist/
 /nbproject/
-/snli_1.0_test.txt
-/snli_1.0_train.txt
+/snli_1.0_dev.bigrams.TH_D.fix.kelp
+/snli_1.0_test.bigrams.TH_D.fix.kelp
+/snli_1.0_train.bigrams.TH_D.fix.kelp
