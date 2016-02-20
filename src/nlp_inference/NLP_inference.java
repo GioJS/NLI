@@ -69,18 +69,17 @@ public class NLP_inference {
         String filename_test="snli_1.0_test.bigrams.TH_D.fix.kelp";
         //istanzio un simple dataset
         SimpleDataset training_set = new SimpleDataset();
-        
-        int tot_examples=training_set.getNumberOfExamples();
-        int examples=(int) (tot_examples*0.01);
         training_set.populate(filename_train);
-        RandomExampleSelector rand=new RandomExampleSelector(examples);
-        
+        int tot_examples=training_set.getNumberOfExamples();
+        List<Example> training_sample=training_set.getRandExamples((int)(tot_examples*0.01));
+        SimpleDataset new_training = new SimpleDataset();
+        for(Example e : training_sample) new_training.addExample(e);
         //parser per estrarre alberi e label
         CSVParser parser=new CSVParser(filename_train);
         CSVElement pair=null;
 
 //distributed tree
-        int train_limit=10000;
+/*        int train_limit=10000;
         GenericDT dt=new GenericDT(0, 2048,true,true,1,   CircularConvolution.class);
         while((pair=parser.nextPair())!=null){
             //crea un example da aggiungere al dataset
@@ -159,7 +158,7 @@ public class NLP_inference {
 			System.out.println("F1: "
 					+ eval.getPerformanceMeasure("OverallF1"));
                   System.out.println("Accuracy: "+eval.getAccuracy());
-
+*/
     }
     
 }
