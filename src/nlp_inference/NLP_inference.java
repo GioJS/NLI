@@ -65,15 +65,15 @@ public class NLP_inference {
         //classificare se le due frasi sono : neutrali ~ 0, implicanti ~ 1, in contraddizione ~ -1
         //rispetto alle label del file calcolare accuracy (VP+NP)/(P+N) dove P ed N sono positivi e negativi in tot
         //file snli dove abbiamo alberi e annotazione
-        String filename_train="snli_1.0_train.bigrams.TH_D.fix.kelp";
+        String filename_train="unper_snli_1.0_train.bigrams.TH_D.fix.kelp";
         String filename_test="snli_1.0_test.bigrams.TH_D.fix.kelp";
         //istanzio un simple dataset
         SimpleDataset training_set = new SimpleDataset();
         training_set.populate(filename_train);
-        int tot_examples=training_set.getNumberOfExamples();
-        List<Example> training_sample=training_set.getRandExamples((int)(tot_examples*0.01));
-        SimpleDataset new_training = new SimpleDataset();
-        for(Example e : training_sample) new_training.addExample(e);
+        //int tot_examples=training_set.getNumberOfExamples();
+        //List<Example> training_sample=training_set.getRandExamples((int)(tot_examples*0.01));
+        //SimpleDataset new_training = new SimpleDataset();
+        //for(Example e : training_sample) new_training.addExample(e);
         //parser per estrarre alberi e label
         CSVParser parser=new CSVParser(filename_train);
         CSVElement pair=null;
