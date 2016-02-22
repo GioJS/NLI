@@ -39,6 +39,7 @@ import it.uniroma2.sag.kelp.predictionfunction.classifier.multiclass.OneVsOneCla
 import it.uniroma2.sag.kelp.utils.evaluation.MulticlassClassificationEvaluator;
 import it.uniroma2.tk.TreeKernel;
 import it.uniroma2.sag.kelp.data.example.ExamplePair;
+import it.uniroma2.sag.kelp.data.label.Label;
 import it.uniroma2.sag.kelp.kernel.KernelCombination;
 import it.uniroma2.sag.kelp.kernel.tree.SmoothedPartialTreeKernel;
 import it.uniroma2.sag.kelp.kernel.vector.LinearKernel;
@@ -55,78 +56,15 @@ public class NLP_inference {
      * @param args the command line arguments
      */
     public static void main(String[] args) throws IOException, Exception {
-        // TODO code application logic here
-        //leggere dal csv separato da tab (\t)
-        //per ogni riga estrarre i due alberi parentesizzati
-        //generare gli alberi
-        //generare i dt
-        //dot product tra dt
-        //abbiamo similitudine tra le due frasi
-        //classificare se le due frasi sono : neutrali ~ 0, implicanti ~ 1, in contraddizione ~ -1
-        //rispetto alle label del file calcolare accuracy (VP+NP)/(P+N) dove P ed N sono positivi e negativi in tot
-        //file snli dove abbiamo alberi e annotazione
+        
         String filename_train="unper_snli_1.0_train.bigrams.TH_D.fix.kelp";
         String filename_test="snli_1.0_test.bigrams.TH_D.fix.kelp";
         //istanzio un simple dataset
         SimpleDataset training_set = new SimpleDataset();
         training_set.populate(filename_train);
-        //int tot_examples=training_set.getNumberOfExamples();
-        //List<Example> training_sample=training_set.getRandExamples((int)(tot_examples*0.01));
-        //SimpleDataset new_training = new SimpleDataset();
-        //for(Example e : training_sample) new_training.addExample(e);
-        //parser per estrarre alberi e label
-        CSVParser parser=new CSVParser(filename_train);
-        CSVElement pair=null;
-
-//distributed tree
-/*        int train_limit=10000;
-        GenericDT dt=new GenericDT(0, 2048,true,true,1,   CircularConvolution.class);
-        while((pair=parser.nextPair())!=null){
-            //crea un example da aggiungere al dataset
-              if(train_limit == 0)
-                  break;
-              if(pair.getLabel().equals("-"))
-                  continue;
-              SimpleExample ex=new SimpleExample();
-              ex.addLabel(new StringLabel(pair.getLabel()));
-              double[] dt1=dt.dt(pair.getT1());
-              double[] dt2=dt.dt(pair.getT2());
-              ex.addRepresentation("T1", new DenseVector(dt1));
-              ex.addRepresentation("T2", new DenseVector(dt2));
-             // ex.addRepresentation("Cos", new DenseVector(new double[]{ArrayMath.cosine(dt1, dt2)}));
-              training_set.addExample(ex);
-
-           train_limit--;
-           System.out.println(10000-train_limit);
-        }
-
         SimpleDataset test_set = new SimpleDataset();
-        
-        int test_limit=5000;
-        parser=new CSVParser(filename_test);
-        pair=null;
-        
-        while((pair=parser.nextPair())!=null){
-            //crea un example da aggiungere al dataset
-              if(test_limit==0)
-                  break;
-              if(pair.getLabel().equals("-"))
-                  continue;
-              SimpleExample ex=new SimpleExample();
-              ex.addLabel(new StringLabel(pair.getLabel()));
-              double[] dt1=dt.dt(pair.getT1());
-              double[] dt2=dt.dt(pair.getT2());
-              ex.addRepresentation("T1", new DenseVector(dt1));
-              ex.addRepresentation("T2", new DenseVector(dt2));
-             // ex.addRepresentation("Cos", new DenseVector(new double[]{ArrayMath.cosine(dt1, dt2)}));
-              test_set.addExample(ex);
-
-           test_limit--;
-           System.out.println(5000-test_limit);
-        }
-        //inizializzo una svm con kernel lineare
-        
-        
+        test_set.populate(filename_test);
+       
         BinaryNuSvmClassification svmSolver = new BinaryNuSvmClassification();
         Kernel kernel=new KernelMultiplication();
 
@@ -136,11 +74,15 @@ public class NLP_inference {
 
         OneVsOneLearning classificator = new OneVsOneLearning();
         classificator.setBaseAlgorithm(svmSolver);
-        classificator.setLabels(training_set.getClassificationLabels());
+        List<Label> labels = training_set.getClassificationLabels();
+        
+        System.out.println(labels);
+        
+        classificator.setLabels(labels);
         classificator.learn(training_set);
         //calcolo l'accuracy sul test set
         OneVsOneClassifier f = classificator.getPredictionFunction();
-        MulticlassClassificationEvaluator eval = new MulticlassClassificationEvaluator(training_set.getClassificationLabels());
+        MulticlassClassificationEvaluator eval = new MulticlassClassificationEvaluator(labels);
 
         for(Example e:test_set.getExamples()){
             OneVsOneClassificationOutput output=f.predict(e);
@@ -158,7 +100,7 @@ public class NLP_inference {
 			System.out.println("F1: "
 					+ eval.getPerformanceMeasure("OverallF1"));
                   System.out.println("Accuracy: "+eval.getAccuracy());
-*/
+
     }
     
 }
