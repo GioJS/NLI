@@ -73,7 +73,9 @@ public class NLP_inference {
         BinaryCSvmClassification svmSolver = new BinaryCSvmClassification();
         //Kernel kernel=new SmoothedPartialTreeKernel();
         //Kernel kernel = new SmoothedPartialTreeKernel(0.4f,0.4f,1.0f,0.6f,new LexicalStructureElementSimilarity(),"parse");
-        Kernel kernel = new PartialTreeKernel(0.4f,0.4f,1,"parse");
+       // Kernel kernel = new PartialTreeKernel(0.4f,0.4f,1,"parse");
+        Kernel kernel = new LinearKernel("bigram");
+        
         svmSolver.setKernel(kernel);
         svmSolver.setCn(1.0f);
         svmSolver.setCp(1.0f);
