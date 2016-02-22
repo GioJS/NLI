@@ -45,6 +45,7 @@ import it.uniroma2.sag.kelp.kernel.tree.SmoothedPartialTreeKernel;
 import it.uniroma2.sag.kelp.kernel.vector.LinearKernel;
 import it.uniroma2.sag.kelp.learningalgorithm.classification.libsvm.BinaryNuSvmClassification;
 import it.uniroma2.sag.kelp.data.label.StringLabel;
+import it.uniroma2.sag.kelp.kernel.pairs.UncrossedPairwiseProductKernel;
 /**
  *
  * @author giordanocristini
@@ -60,15 +61,17 @@ public class NLP_inference {
         
         String filename_train="unper_snli_1.0_train.bigrams.TH_D.fix.kelp";
         String filename_test="snli_1.0_test.bigrams.TH_D.fix.kelp";
+        
         //istanzio un simple dataset
         SimpleDataset training_set = new SimpleDataset();
         training_set.populate(filename_train);
         SimpleDataset test_set = new SimpleDataset();
         test_set.populate(filename_test);
-       
+        //test_set.populate("snli_1.0_dev.bigrams.TH_D.fix.kelp");
         BinaryNuSvmClassification svmSolver = new BinaryNuSvmClassification();
-        Kernel kernel=new KernelMultiplication();
-
+        //Kernel kernel=new SmoothedPartialTreeKernel();
+        //Kernel kernel = new PartialTreeKernel(0.4f, 0.4f, 1, "parse");
+        Kernel kernel = new KernelMultiplication();
         svmSolver.setKernel(kernel);
         svmSolver.setCn(1.0f);
         svmSolver.setCp(1.0f);
