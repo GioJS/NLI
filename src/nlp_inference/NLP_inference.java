@@ -44,6 +44,7 @@ import it.uniroma2.sag.kelp.kernel.KernelCombination;
 import it.uniroma2.sag.kelp.kernel.tree.SmoothedPartialTreeKernel;
 import it.uniroma2.sag.kelp.kernel.vector.LinearKernel;
 import it.uniroma2.sag.kelp.learningalgorithm.classification.libsvm.BinaryNuSvmClassification;
+import it.uniroma2.sag.kelp.data.label.StringLabel;
 /**
  *
  * @author giordanocristini
@@ -75,7 +76,7 @@ public class NLP_inference {
         OneVsOneLearning classificator = new OneVsOneLearning();
         classificator.setBaseAlgorithm(svmSolver);
         List<Label> labels = training_set.getClassificationLabels();
-        
+        labels.remove(2);
         System.out.println(labels);
         
         classificator.setLabels(labels);
@@ -85,6 +86,9 @@ public class NLP_inference {
         MulticlassClassificationEvaluator eval = new MulticlassClassificationEvaluator(labels);
 
         for(Example e:test_set.getExamples()){
+            StringLabel l=(StringLabel) e.getLabels()[0];
+            if(l.getClassName().equals("-"))
+                continue;
             OneVsOneClassificationOutput output=f.predict(e);
             System.out.println("Oracolo: "+e.getLabels()[0]);
             
