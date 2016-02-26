@@ -22,6 +22,7 @@ import it.uniroma2.sag.kelp.kernel.standard.KernelMultiplication;
 import it.uniroma2.sag.kelp.kernel.tree.PartialTreeKernel;
 import it.uniroma2.sag.kelp.kernel.standard.LinearKernelCombination;
 import it.uniroma2.sag.kelp.kernel.tree.SubTreeKernel;
+import it.uniroma2.sag.kelp.learningalgorithm.classification.dcd.DCDLearningAlgorithm;
 import it.uniroma2.sag.kelp.learningalgorithm.classification.libsvm.BinaryCSvmClassification;
 import it.uniroma2.sag.kelp.learningalgorithm.classification.multiclassification.MultiLabelClassificationLearning;
 import it.uniroma2.sag.kelp.learningalgorithm.classification.perceptron.KernelizedPerceptron;
@@ -70,18 +71,19 @@ public class NLP_inference {
         SimpleDataset test_set = new SimpleDataset();
         test_set.populate(filename_test);
         //test_set.populate("snli_1.0_dev.bigrams.TH_D.fix.kelp");
-        BinaryCSvmClassification svmSolver = new BinaryCSvmClassification();
+       // BinaryCSvmClassification svmSolver = new BinaryCSvmClassification();
         //Kernel kernel=new SmoothedPartialTreeKernel();
         //Kernel kernel = new SmoothedPartialTreeKernel(0.4f,0.4f,1.0f,0.6f,new LexicalStructureElementSimilarity(),"parse");
        // Kernel kernel = new PartialTreeKernel(0.4f,0.4f,1,"parse");
-        Kernel kernel = new LinearKernel("bigram");
+        DCDLearningAlgorithm dcd = new DCDLearningAlgorithm(1.0f, 1.0f, 10, "bigram");
+      //  Kernel kernel = new LinearKernel();
         
-        svmSolver.setKernel(kernel);
-        svmSolver.setCn(1.0f);
-        svmSolver.setCp(1.0f);
-
+//        svmSolver.setKernel(kernel);
+//        svmSolver.setCn(1.0f);
+//        svmSolver.setCp(1.0f);
+        
         OneVsOneLearning classificator = new OneVsOneLearning();
-        classificator.setBaseAlgorithm(svmSolver);
+        classificator.setBaseAlgorithm(dcd);
         List<Label> labels = training_set.getClassificationLabels();
         labels.remove(2);
         System.out.println(labels);
