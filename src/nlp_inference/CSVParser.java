@@ -15,6 +15,7 @@ import java.io.IOException;
  *
  * @author Caterina
  */
+@Deprecated
 class CSVElement{
     private Tree t1;
     private Tree t2;
@@ -50,6 +51,7 @@ class CSVElement{
         this.label = label;
     }
 }
+@Deprecated
 public class CSVParser {
     
     String file;
